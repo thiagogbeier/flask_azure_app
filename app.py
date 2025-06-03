@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Email
 from werkzeug.utils import secure_filename
+from werkzeug.middleware.proxy_fix import ProxyFix
 import msal
 
 # Load secrets from .env
@@ -20,12 +21,21 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 SCOPE = ["User.Read"]
 SESSION_KEY = "msal_token_cache"
 
+# Flask app setup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-# Upload directory (make sure it exists)
+# Force HTTPS when behind Azure reverse proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+@app.before_request
+def enforce_https_in_url_for():
+    if request.headers.get('X-Forwarded-Proto') == 'https':
+        request.environ['wsgi.url_scheme'] = 'https'
+
+# Upload directory
 UPLOAD_FOLDER = os.path.join("static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -36,7 +46,7 @@ class MyForm(FlaskForm):
     notes = TextAreaField('Notes', validators=[DataRequired()])
     image = FileField('Image')
 
-# Home page (form) - now handles GET and POST
+# Home page (form)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = MyForm()
@@ -55,8 +65,7 @@ def index():
 
     return render_template('form.html', form=form)
 
-
-# Login route (Microsoft)
+# Microsoft login
 @app.route('/login')
 def login():
     msal_app = msal.ConfidentialClientApplication(
@@ -71,7 +80,7 @@ def login():
     )
     return redirect(auth_url)
 
-# Callback route after login
+# Microsoft callback
 @app.route(REDIRECT_PATH)
 def getAToken():
     cache = msal.SerializableTokenCache()
@@ -95,7 +104,7 @@ def getAToken():
     else:
         return f"Login failed: {json.dumps(result, indent=2)}"
 
-# Logout and sign out from Azure
+# Logout
 @app.route('/logout')
 def logout():
     session.clear()
@@ -105,5 +114,6 @@ def logout():
     )
     return redirect(logout_url)
 
+# Run app
 if __name__ == '__main__':
     app.run(debug=True)
