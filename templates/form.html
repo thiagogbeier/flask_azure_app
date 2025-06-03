@@ -1,31 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Submit Form</title>
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Submit your details</h1>
+			<a href="{{ url_for('logout') }}">Sign Out</a>
+			<form method="post" enctype="multipart/form-data">
+				{{ form.hidden_tag() }}
 
-<html lang="en"></html lang="en">
-  
-    <meta charset="utf-8"></meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-  
-  
-    <div class="container"></div class="container">
-      
-Submit your details
-      <form method="post" enctype="multipart form-data"=""></form method="post" enctype="multipart>
-        {{ form.hidden_tag() }}
-        
-          {{ form.name.label }} {{ form.name(size=32) }}
-        
-        
-          {{ form.email.label }} {{ form.email(size=32) }}
-        
-        
-          {{ form.notes.label }} {{ form.notes(cols=40, rows=5) }}
-        
-        
-          {{ form.image.label }} {{ form.image() }}
-        
-        
-          <button type="submit">Submit</button type="submit">
-        
-      
-    
-  
+				<p>{{ form.name.label }}<br />{{ form.name(size=32) }}</p>
+				<p>{{ form.email.label }}<br />{{ form.email(size=32) }}</p>
+				<p>{{ form.notes.label }}<br />{{ form.notes(cols=40, rows=5) }}</p>
+				<p>{{ form.image.label }}<br />{{ form.image() }}</p>
+
+				<p><button type="submit">Submit</button></p>
+			</form>
+		</div>
+	</body>
+</html>
