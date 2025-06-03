@@ -36,12 +36,25 @@ class MyForm(FlaskForm):
     notes = TextAreaField('Notes', validators=[DataRequired()])
     image = FileField('Image')
 
-# Home page (form)
-@app.route('/')
+# Home page (form) - now handles GET and POST
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    form = MyForm()
     if not session.get(SESSION_KEY):
         return redirect(url_for('login'))
-    return render_template('form.html', form=MyForm())
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            image = form.image.data
+            if image and image.filename:
+                filename = secure_filename(image.filename)
+                image.save(os.path.join(UPLOAD_FOLDER, filename))
+            return render_template('success.html', message="Form submitted successfully!")
+        else:
+            return render_template('form.html', form=form)
+
+    return render_template('form.html', form=form)
+
 
 # Login route (Microsoft)
 @app.route('/login')
@@ -81,18 +94,6 @@ def getAToken():
         return redirect(url_for("index"))
     else:
         return f"Login failed: {json.dumps(result, indent=2)}"
-
-# Submit form handler
-@app.route('/submit', methods=['POST'])
-def submit():
-    form = MyForm()
-    if form.validate_on_submit():
-        image = form.image.data
-        if image and image.filename:
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(UPLOAD_FOLDER, filename))
-        return 'Form submitted successfully!'
-    return render_template('form.html', form=form)
 
 # Logout and sign out from Azure
 @app.route('/logout')
