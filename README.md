@@ -6,6 +6,10 @@ _Click Here to Deploy Web Apps to Azure_
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fthiagogbeier%2Fflask_azure_app%2Fmain%2Fazuredeploy.json)
 
+Make sure to validate if you are creating New Resource Group (click on Create New) or select existing.
+
+![Alt text](webappservice-image2.png "Azure Teamplate Wizard")
+
 _When Web App is up and running check the following:_
 
 - Web App main URL
