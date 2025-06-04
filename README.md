@@ -1,1 +1,1 @@
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://github.com/thiagogbeier/flask_azure_app/blob/main/azuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githack.com/thiagogbeier/flask_azure_app/main/azuredeploy.json)
